@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -13,6 +14,7 @@ import java.util.Properties;
 
 public class AddressbookDBService {
 	private static AddressbookDBService addressbookDBService;
+	private PreparedStatement addressbookDataStatement;
 
 	private AddressbookDBService() {
 	}
@@ -81,5 +83,47 @@ public class AddressbookDBService {
 			e.printStackTrace();
 		}
 		return addressbookList;
+	}
+
+	public int updateAddressbookData(String firstName, String phone) throws SQLException {
+		return this.updateAddressbookDataUsingPreparedStatement(firstName, phone);
+	}
+
+	private int updateAddressbookDataUsingPreparedStatement(String firstName, String phone) throws SQLException {
+		try (Connection connection = getConnect()) {
+			String sql = "UPDATE addressbook SET PhoneNumber=? WHERE FirstName=?";
+			PreparedStatement preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setString(1, phone);
+			preparedStatement.setString(2, firstName);
+			return preparedStatement.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	public List<AddressbookData> getAddressbookDetails(String firstName) {
+		List<AddressbookData> addressbookList = null;
+		if (this.addressbookDataStatement == null)
+			this.preparedStatementForAddressbookData();
+		try {
+			addressbookDataStatement.setString(1, firstName);
+			ResultSet resultSet = addressbookDataStatement.executeQuery();
+			addressbookList = this.getAddressbookData(resultSet);
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
+		return addressbookList;
+	}
+
+	private void preparedStatementForAddressbookData() {
+		try {
+			Connection connection = getConnect();
+			String sql = "SELECT * FROM addressbook WHERE FirstName=?";
+			addressbookDataStatement = connection.prepareStatement(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 }

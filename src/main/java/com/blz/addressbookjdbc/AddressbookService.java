@@ -1,5 +1,6 @@
 package com.blz.addressbookjdbc;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class AddressbookService {
@@ -23,6 +24,32 @@ public class AddressbookService {
 		if (ioService == IOService.DB_IO)
 			this.addressbookList = addressbookDBService.readData();
 		return this.addressbookList;
+	}
+
+	public void updateContactNumber(String firstName, String phone) {
+		int result;
+		try {
+			result = addressbookDBService.updateAddressbookData(firstName, phone);
+			if (result == 0)
+				return;
+			AddressbookData addressbookData = this.getAddressbookData(firstName);
+			if (addressbookData != null)
+				addressbookData.phone = phone;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private AddressbookData getAddressbookData(String firstName) {
+		AddressbookData addressbookData;
+		addressbookData = this.addressbookList.stream().filter(dataItem -> dataItem.firstName.equals(firstName))
+				.findFirst().orElse(null);
+		return addressbookData;
+	}
+
+	public boolean checkAddressbookSyncWithDB(String firstName) {
+		List<AddressbookData> addressbookDataList = addressbookDBService.getAddressbookDetails(firstName);
+		return addressbookDataList.get(0).equals(getAddressbookData(firstName));
 	}
 
 }

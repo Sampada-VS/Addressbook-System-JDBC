@@ -30,4 +30,12 @@ public class AddressbookServiceTest {
 		assertEquals(4, addressbookData.size());
 		System.out.println("Total person in addressbook :" + addressbookData.size());
 	}
+
+	@Test
+	public void givenPhoneNumber_WhenUpdated_ShouldSyncWithDB() {
+		addressbookService.updateContactNumber("Terrisa", "9876543284");
+		boolean result = addressbookService.checkAddressbookSyncWithDB("Terrisa");
+		assertTrue(result);
+		System.out.println("Contact number got updated for Terrisa.");
+	}
 }
