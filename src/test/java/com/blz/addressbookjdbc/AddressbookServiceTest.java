@@ -34,7 +34,7 @@ public class AddressbookServiceTest {
 
 	@Test
 	public void givenPhoneNumber_WhenUpdated_ShouldSyncWithDB() {
-		addressbookService.updateContactNumber("Terrisa", "9876543284");
+		addressbookService.updateContactNumber("Terrisa", "9876543285");
 		boolean result = addressbookService.checkAddressbookSyncWithDB("Terrisa");
 		assertTrue(result);
 		System.out.println("Contact number got updated for Terrisa.");
@@ -47,5 +47,21 @@ public class AddressbookServiceTest {
 		addressbookData = addressbookService.readAddressbookForDateRange(AddressbookService.IOService.DB_IO,dateAdded, dateNow);
 		assertEquals(3, addressbookData.size());
 		System.out.println("Person count match for given date range.");
+	}	
+	
+	@Test
+	public void givenCity_WhenContactsRetrieved_ShouldMatchPersonCount() {
+		String city="Mumbai";
+		addressbookData = addressbookService.readAddressbookForCity(AddressbookService.IOService.DB_IO,city);
+		assertEquals(2, addressbookData.size());
+		System.out.println("Person count match for given city.");
+	}	
+	
+	@Test
+	public void givenState_WhenContactsRetrieved_ShouldMatchPersonCount() {
+		String state="Maharashtra";
+		addressbookData = addressbookService.readAddressbookForState(AddressbookService.IOService.DB_IO,state);
+		assertEquals(3, addressbookData.size());
+		System.out.println("Person count match for given state.");
 	}	
 }

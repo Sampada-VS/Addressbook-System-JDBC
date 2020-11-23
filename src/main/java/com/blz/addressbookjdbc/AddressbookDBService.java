@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.checkerframework.checker.units.qual.s;
+
 public class AddressbookDBService {
 	private static AddressbookDBService addressbookDBService;
 	private PreparedStatement addressbookDataStatement;
@@ -132,6 +134,16 @@ public class AddressbookDBService {
 	public List<AddressbookData> getAddressbookForDateRange(LocalDate dateAdded, LocalDate dateNow) {
 		String sql = String.format("SELECT * FROM addressbook WHERE date_added BETWEEN '%s' AND '%s'",
 				Date.valueOf(dateAdded), Date.valueOf(dateNow));
+		return this.getAddressbookDataUsingDB(sql);
+	}
+
+	public List<AddressbookData> getAddressbookForGivenCity(String city) {
+		String sql = String.format("SELECT * FROM addressbook WHERE City='%s'",city);
+		return this.getAddressbookDataUsingDB(sql);
+	}
+
+	public List<AddressbookData> getAddressbookForGivenState(String state) {
+		String sql = String.format("SELECT * FROM addressbook WHERE State='%s'",state);
 		return this.getAddressbookDataUsingDB(sql);
 	}
 }
