@@ -22,8 +22,7 @@ public class AddressbookService {
 	}
 
 	public List<AddressbookData> readAddressbookDataFromDB(IOService ioService) {
-		if (ioService == IOService.DB_IO)
-			this.addressbookList = addressbookDBService.readData();
+		this.addressbookList = addressbookDBService.readData();
 		return this.addressbookList;
 	}
 
@@ -53,8 +52,7 @@ public class AddressbookService {
 		return addressbookDataList.get(0).equals(getAddressbookData(firstName));
 	}
 
-	public List<AddressbookData> readAddressbookForDateRange(IOService ioService, LocalDate dateAdded,
-			LocalDate dateNow) {
+	public List<AddressbookData> readAddressbookForDateRange(IOService ioService, LocalDate dateAdded,LocalDate dateNow) {
 		if (ioService.equals(IOService.DB_IO))
 			return addressbookDBService.getAddressbookForDateRange(dateAdded, dateNow);
 		return null;
@@ -70,5 +68,12 @@ public class AddressbookService {
 		if (ioService.equals(IOService.DB_IO))
 			return addressbookDBService.getAddressbookForGivenState(state);
 		return null;
+	}
+
+	public void addPersonToAddressbook(String firstName, String lastName, String address, String city, String state,
+			String zip, String phone, String email, LocalDate dateAdded) {
+		addressbookList
+		.add(addressbookDBService.addPersonToAddressbookDB(firstName, lastName, address, city, state, zip, phone, email,dateAdded));
+		
 	}
 }

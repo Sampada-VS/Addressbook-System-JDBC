@@ -39,29 +39,38 @@ public class AddressbookServiceTest {
 		assertTrue(result);
 		System.out.println("Contact number got updated for Terrisa.");
 	}
-	
+
 	@Test
 	public void givenDateRange_WhenRetrieved_ShouldMatchPersonCount() {
-		LocalDate dateAdded = LocalDate.of(2019, 01, 01);
+		LocalDate dateAdded = LocalDate.of(2018, 01, 01);
 		LocalDate dateNow = LocalDate.now();
-		addressbookData = addressbookService.readAddressbookForDateRange(AddressbookService.IOService.DB_IO,dateAdded, dateNow);
+		addressbookData = addressbookService.readAddressbookForDateRange(AddressbookService.IOService.DB_IO, dateAdded,dateNow);
 		assertEquals(3, addressbookData.size());
 		System.out.println("Person count match for given date range.");
-	}	
-	
+	}
+
 	@Test
 	public void givenCity_WhenContactsRetrieved_ShouldMatchPersonCount() {
-		String city="Mumbai";
-		addressbookData = addressbookService.readAddressbookForCity(AddressbookService.IOService.DB_IO,city);
+		String city = "Mumbai";
+		addressbookData = addressbookService.readAddressbookForCity(AddressbookService.IOService.DB_IO, city);
 		assertEquals(2, addressbookData.size());
 		System.out.println("Person count match for given city.");
-	}	
-	
+	}
+
 	@Test
 	public void givenState_WhenContactsRetrieved_ShouldMatchPersonCount() {
-		String state="Maharashtra";
-		addressbookData = addressbookService.readAddressbookForState(AddressbookService.IOService.DB_IO,state);
+		String state = "Maharashtra";
+		addressbookData = addressbookService.readAddressbookForState(AddressbookService.IOService.DB_IO, state);
 		assertEquals(3, addressbookData.size());
 		System.out.println("Person count match for given state.");
-	}	
+	}
+
+	@Test
+	public void givenNewPerson_WhenAdded_ShouldSyncWithDB() {
+		addressbookService.addPersonToAddressbook("Gunjan", "T", "K", "Kerala", "Kerala", "498792", "9876543213",
+				"gt@gm.com", LocalDate.now());
+		boolean result = addressbookService.checkAddressbookSyncWithDB("Gunjan");
+		assertTrue(result);
+		System.out.println("Person added in addressbook .");
+	}
 }

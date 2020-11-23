@@ -14,8 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.checkerframework.checker.units.qual.s;
-
 public class AddressbookDBService {
 	private static AddressbookDBService addressbookDBService;
 	private PreparedStatement addressbookDataStatement;
@@ -93,9 +91,9 @@ public class AddressbookDBService {
 		return this.updateAddressbookDataUsingPreparedStatement(firstName, phone);
 	}
 
-	private int updateAddressbookDataUsingPreparedStatement(String firstName, String phone) throws SQLException {
+	private int updateAddressbookDataUsingPreparedStatement(String firstName, String phone) {
 		try (Connection connection = getConnect()) {
-			String sql = "UPDATE addressbook SET PhoneNumber=? WHERE FirstName=?";
+			String sql = "UPDATE addressbook SET PhoneNumber=? WHERE FirstName=? ";
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			preparedStatement.setString(1, phone);
 			preparedStatement.setString(2, firstName);
@@ -132,18 +130,41 @@ public class AddressbookDBService {
 	}
 
 	public List<AddressbookData> getAddressbookForDateRange(LocalDate dateAdded, LocalDate dateNow) {
-		String sql = String.format("SELECT * FROM addressbook WHERE date_added BETWEEN '%s' AND '%s'",
+		String sql = String.format("SELECT * FROM addressbook WHERE date_added BETWEEN '%s' AND '%s';",
 				Date.valueOf(dateAdded), Date.valueOf(dateNow));
 		return this.getAddressbookDataUsingDB(sql);
 	}
 
 	public List<AddressbookData> getAddressbookForGivenCity(String city) {
-		String sql = String.format("SELECT * FROM addressbook WHERE City='%s'",city);
+		String sql = String.format("SELECT * FROM addressbook WHERE City='%s'", city);
 		return this.getAddressbookDataUsingDB(sql);
 	}
 
 	public List<AddressbookData> getAddressbookForGivenState(String state) {
-		String sql = String.format("SELECT * FROM addressbook WHERE State='%s'",state);
+		String sql = String.format("SELECT * FROM addressbook WHERE State='%s'", state);
 		return this.getAddressbookDataUsingDB(sql);
+	}
+
+	public AddressbookData addPersonToAddressbookDB(String firstName, String lastName, String address, String city,
+			String state, String zip, String phone, String email, LocalDate dateAdded) {
+		int personId = -1;
+		AddressbookData addressbookData = null;
+		String sql = String.format(
+				"INSERT INTO addressbook (FirstName,LastName,Address,City,State,Zip,PhoneNumber,Email,date_added) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+				firstName, lastName, address, city, state, zip, phone, email, dateAdded);
+		try (Connection connection = getConnect()) {
+			Statement statement = connection.createStatement();
+			int rowAffected = statement.executeUpdate(sql, statement.RETURN_GENERATED_KEYS);
+			if (rowAffected == 1) {
+				ResultSet resultSet = statement.getGeneratedKeys();
+				if (resultSet.next())
+					personId = resultSet.getInt(1);
+			}
+			addressbookData = new AddressbookData(personId, firstName, lastName, address, city, state, zip, phone,
+					email, dateAdded);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return addressbookData;
 	}
 }
