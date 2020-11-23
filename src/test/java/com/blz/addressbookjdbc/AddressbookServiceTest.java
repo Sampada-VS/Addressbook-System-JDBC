@@ -2,6 +2,7 @@ package com.blz.addressbookjdbc;
 
 import static org.junit.Assert.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.AfterClass;
@@ -38,4 +39,13 @@ public class AddressbookServiceTest {
 		assertTrue(result);
 		System.out.println("Contact number got updated for Terrisa.");
 	}
+	
+	@Test
+	public void givenDateRange_WhenRetrieved_ShouldMatchPersonCount() {
+		LocalDate dateAdded = LocalDate.of(2019, 01, 01);
+		LocalDate dateNow = LocalDate.now();
+		addressbookData = addressbookService.readAddressbookForDateRange(AddressbookService.IOService.DB_IO,dateAdded, dateNow);
+		assertEquals(3, addressbookData.size());
+		System.out.println("Person count match for given date range.");
+	}	
 }

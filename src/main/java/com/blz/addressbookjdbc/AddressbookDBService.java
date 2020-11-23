@@ -3,11 +3,13 @@ package com.blz.addressbookjdbc;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -125,5 +127,11 @@ public class AddressbookDBService {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public List<AddressbookData> getAddressbookForDateRange(LocalDate dateAdded, LocalDate dateNow) {
+		String sql = String.format("SELECT * FROM addressbook WHERE date_added BETWEEN '%s' AND '%s'",
+				Date.valueOf(dateAdded), Date.valueOf(dateNow));
+		return this.getAddressbookDataUsingDB(sql);
 	}
 }

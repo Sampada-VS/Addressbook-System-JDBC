@@ -1,6 +1,7 @@
 package com.blz.addressbookjdbc;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 public class AddressbookService {
@@ -52,4 +53,10 @@ public class AddressbookService {
 		return addressbookDataList.get(0).equals(getAddressbookData(firstName));
 	}
 
+	public List<AddressbookData> readAddressbookForDateRange(IOService ioService, LocalDate dateAdded,
+			LocalDate dateNow) {
+		if (ioService.equals(IOService.DB_IO))
+			return addressbookDBService.getAddressbookForDateRange(dateAdded, dateNow);
+		return null;
+	}
 }

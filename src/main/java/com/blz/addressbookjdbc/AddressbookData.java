@@ -27,6 +27,12 @@ public class AddressbookData {
 		this.email = email;
 	}
 
+	public AddressbookData(int id, String firstName, String lastName, String address, String city, String state,
+			String zip, String phone, String email, LocalDate dateAdded) {
+		this(id, firstName, lastName, address, city, state, zip, phone, email);
+		this.dateAdded = dateAdded;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
