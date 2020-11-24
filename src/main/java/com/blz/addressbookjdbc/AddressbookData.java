@@ -40,7 +40,7 @@ public class AddressbookData {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		AddressbookData that = (AddressbookData) o;
-		return id == that.id && firstName.equals(that.firstName) && lastName.equals(that.lastName)
+		return id == that.id && firstName.equals(that.firstName) && lastName.equals(that.lastName)	
 				&& address.equals(that.address) && city.equals(that.city) && state.equals(that.state)
 				&& zip.equals(that.zip) && phone.equals(that.phone) && email.equals(that.email);
 	}

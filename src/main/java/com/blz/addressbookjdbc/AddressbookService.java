@@ -2,7 +2,9 @@ package com.blz.addressbookjdbc;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AddressbookService {
 	public enum IOService {
@@ -52,7 +54,8 @@ public class AddressbookService {
 		return addressbookDataList.get(0).equals(getAddressbookData(firstName));
 	}
 
-	public List<AddressbookData> readAddressbookForDateRange(IOService ioService, LocalDate dateAdded,LocalDate dateNow) {
+	public List<AddressbookData> readAddressbookForDateRange(IOService ioService, LocalDate dateAdded,
+			LocalDate dateNow) {
 		if (ioService.equals(IOService.DB_IO))
 			return addressbookDBService.getAddressbookForDateRange(dateAdded, dateNow);
 		return null;
@@ -72,8 +75,35 @@ public class AddressbookService {
 
 	public void addPersonToAddressbook(String firstName, String lastName, String address, String city, String state,
 			String zip, String phone, String email, LocalDate dateAdded) {
-		addressbookList
-		.add(addressbookDBService.addPersonToAddressbookDB(firstName, lastName, address, city, state, zip, phone, email,dateAdded));
-		
+		addressbookList.add(addressbookDBService.addPersonToAddressbookDB(firstName, lastName, address, city, state,
+				zip, phone, email, dateAdded));
+
 	}
+
+	public void addContactToAddressbookUsingThreads(List<AddressbookData> contactsList) {
+		Map<Integer, Boolean> contactAdditionStatus = new HashMap<Integer, Boolean>();
+		contactsList.forEach(personData -> {
+			Runnable task = () -> {
+				contactAdditionStatus.put(personData.hashCode(), false);
+				this.addPersonToAddressbook(personData.firstName, personData.lastName, personData.address,
+						personData.city, personData.state, personData.zip, personData.phone, personData.email,
+						personData.dateAdded);
+
+				contactAdditionStatus.put(personData.hashCode(), true);
+			};
+			Thread thread = new Thread(task, personData.firstName);
+			thread.start();
+		});
+		while (contactAdditionStatus.containsValue(false)) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+			}
+		}
+	}
+
+	public long countEntry(IOService ioService) {
+		return addressbookList.size();
+	}
+
 }

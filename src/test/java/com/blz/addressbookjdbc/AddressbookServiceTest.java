@@ -2,7 +2,10 @@ package com.blz.addressbookjdbc;
 
 import static org.junit.Assert.*;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.AfterClass;
@@ -44,7 +47,8 @@ public class AddressbookServiceTest {
 	public void givenDateRange_WhenRetrieved_ShouldMatchPersonCount() {
 		LocalDate dateAdded = LocalDate.of(2018, 01, 01);
 		LocalDate dateNow = LocalDate.now();
-		addressbookData = addressbookService.readAddressbookForDateRange(AddressbookService.IOService.DB_IO, dateAdded,dateNow);
+		addressbookData = addressbookService.readAddressbookForDateRange(AddressbookService.IOService.DB_IO, dateAdded,
+				dateNow);
 		assertEquals(3, addressbookData.size());
 		System.out.println("Person count match for given date range.");
 	}
@@ -72,5 +76,21 @@ public class AddressbookServiceTest {
 		boolean result = addressbookService.checkAddressbookSyncWithDB("Gunjan");
 		assertTrue(result);
 		System.out.println("Person added in addressbook .");
+	}
+
+	@Test
+	public void givenFourContacts_WhenAdded_ShouldMatchContactEntries() {
+		AddressbookData[] arrayOfPersons = {
+				new AddressbookData(0, "Bill", "T", "CST", "Mumbai", "Maharashtra", "428792", "9876543213", "bt@gm.com",LocalDate.now()),
+				new AddressbookData(0, "Mark", "K", "Dadar", "Mumbai", "Maharashtra", "498892", "9876544213","mt@gm.com", LocalDate.now()),
+				new AddressbookData(0, "Terrisa", "T", "Karve", "Pune", "Maharashtra", "491792", "9877543213","tt@gm.com", LocalDate.now()),
+				new AddressbookData(0, "Charlie", "K", "S", "New Delhi", "Delhi", "493792", "9879543213", "ck@gm.com",LocalDate.now()) };
+		AddressbookService addressbookService = new AddressbookService();
+		addressbookService.readAddressbookDataFromDB(AddressbookService.IOService.DB_IO);
+		Instant threadStart = Instant.now();
+		addressbookService.addContactToAddressbookUsingThreads(Arrays.asList(arrayOfPersons));
+		Instant threadEnd = Instant.now();
+		System.out.println("Duration with thread :" + Duration.between(threadStart, threadEnd));
+		assertEquals(5, addressbookService.countEntry(AddressbookService.IOService.DB_IO));
 	}
 }
